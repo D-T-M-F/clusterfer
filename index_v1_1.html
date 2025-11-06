@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Anchored Dots — PLATINUM Standard (Preset Menu)</title>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"></script>
+<style>
+  :root { --thumb-fill: #2cf2ee; --thumb-border: #2cf2ee; }
+  body { margin: 0; background: #000; color: #fff; font-family: Helvetica, Arial, sans-serif; overflow: hidden; }
+  
+  #controls, #presetMenu {
+    position: fixed; width: 225px; background: rgba(0,0,0,0.55); padding: 10px; border-radius: 10px; font-family: Helvetica, Arial, sans-serif;
+  }
+
+  #controls { top: 10px; left: 10px; }
+  #presetMenu { left: 10px; }
+
+  .label-row, .checkbox-row, button { font-family: Helvetica, Arial, sans-serif; }
+  .label-row { display:flex; align-items:center; justify-content:space-between; font-weight:700; font-size:0.92em; margin: 2px 0 4px 0; color: #fff; }
+  .slider-row { margin-bottom: 15px; }
+  
+  input[type="range"]{ -webkit-appearance: none; width: 100%; height: 10px; border-radius: 6px; background: #fff; outline: none; margin-top: 0px; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; cursor: pointer; border: 2px solid var(--thumb-border, #fff); background-color: var(--thumb-fill, #fff); box-shadow: none; }
+  input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; cursor: pointer; border: 2px solid var(--thumb-border, #fff); background-color: var(--thumb-fill, #fff); }
+  input[type="color"] { width: 50px; height: 30px; border: none; padding: 0; background: none; cursor: pointer; margin-left: 8px; }
+  .checkbox-row { display:flex; align-items:center; gap:8px; margin: 6px 0 10px 0; }
+  input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+  
+  button { display: inline-block; width: 100%; margin: 6px 0; background: var(--btn-bg, #222); color: var(--btn-text, #000); border: 0px solid var(--btn-border, #444); padding: 6px 8px; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: Helvetica, Arial, sans-serif; transition: background 0.3s, color 0.3s, border-color 0.3s; }
+  button:hover { background: var(--btn-hover-bg, #ff42f9); color: var(--btn-hover-text, #fff); }
+  .val { font-weight: 600; margin-left: 6px; }
+
+  #presetMenu input[type="text"] {
+  width: calc(100% - 12px); /* shrink by 12px */
+  padding: 4px 6px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  border: none;
+  font-family: Helvetica;
+}
+
+  #presetMenu select {
+  width: 100%;
+  padding: 4px 6px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  border: none;
+  font-family: Helvetica;
+  background-color: #888888; /* medium gray */
+  color: #fff; /* optional: keep text visible */
+}
+
+</style>
+</head>
+<body>
+
+<div id="controls">
+  <button id="startBtn">START</button>
+  <button id="defaultsBtn">RESET</button>
+
+  <div class="checkbox-row">
+    <span style="font-weight:700; font-size:0.92em; color:#fff;">3-Color</span>
+    <input type="checkbox" id="useMidColor" checked>
+  </div>
+
+  <!-- NEW Checkbox for Text Layer -->
+  <div class="checkbox-row">
+    <span style="font-weight:700; font-size:0.92em; color:#fff;">Text Layer</span>
+    <input type="checkbox" id="textLayerCheckbox" checked>
+  </div>
+
+  <div class="label-row"><span>Particles</span><span class="val" id="pcntVal">272</span></div>
+  <div class="slider-row"><input type="range" id="particleSlider" min="20" max="500" value="272"></div>
+
+  <div class="label-row"><span>Sensitivity</span><span class="val" id="sensVal">0.5</span></div>
+  <div class="slider-row"><input type="range" id="sensSlider" min="0.1" max="1" step="0.05" value="0.5"></div>
+
+  <div class="label-row"><span>Drift (radius)</span><span class="val" id="driftVal">4.2</span></div>
+  <div class="slider-row"><input type="range" id="driftSlider" min="0" max="5" step="0.1" value="4.2"></div>
+
+  <div class="label-row"><span>Jitter (speed)</span><span class="val" id="jitterVal">0.34</span></div>
+  <div class="slider-row"><input type="range" id="jitterSlider" min="0" max="1" step="0.01" value="0.34"></div>
+
+  <div class="label-row"><span>Opacity</span><span class="val" id="opacityVal">1.0</span></div>
+  <div class="slider-row"><input type="range" id="opacitySlider" min="0" max="1" step="0.01" value="1.0"></div>
+
+  <div class="label-row"><span>Trails</span><span class="val" id="trailsVal">0.73</span></div>
+  <div class="slider-row"><input type="range" id="trailsSlider" min="0" max="1" step="0.01" value="0.73"></div>
+
+  <div class="label-row">
+    <span>Start Color</span>
+    <input type="color" id="startColor" value="#2cf2ee">
+  </div>
+  <div class="label-row">
+    <span>Mid Color</span>
+    <input type="color" id="midColor" value="#4139b1">
+  </div>
+  <div class="label-row">
+    <span>End Color</span>
+    <input type="color" id="endColor" value="#ff4255">
+  </div>
+  <div class="label-row">
+    <span>BG Color</span>
+    <input type="color" id="bgColor" value="#0a0920">
+  </div>
+</div>
+
+<!-- Preset Menu -->
+<div id="presetMenu">
+  <input type="text" id="presetName" placeholder="Preset Name">
+  <select id="presetList"></select>
+  <button id="savePresetBtn">Save Preset</button>
+  <button id="loadPresetBtn">Load Preset</button>
+  <button id="deletePresetBtn">Delete Preset</button>
+</div>
+
+<script>
+const DEFAULTS = {
+  numParticles: 200,
+  sensitivity: 0.65,
+  drift: 5.0,
+  jitter: 1.0,
+  opacity: 0.32,
+  trails: 0.81,
+  useMidColor: true,
+  startColor: "#2cf2ee",
+  midColor: "#4139b1",
+  endColor: "#ff4255",
+  bgColor: "#0a0920",
+  reactRadius: 266,
+  morphFactor: 0
+};
+
+let particles = [];
+let started = false;
+let numParticles = DEFAULTS.numParticles;
+let sensitivity = DEFAULTS.sensitivity;
+let drift = DEFAULTS.drift;
+let jitter = DEFAULTS.jitter;
+let opacity = DEFAULTS.opacity;
+let trails = DEFAULTS.trails;
+let useMidColor = DEFAULTS.useMidColor;
+let reactRadius = DEFAULTS.reactRadius;
+let morphFactor = DEFAULTS.morphFactor;
+let showText = true; // <-- NEW global for text layer
+
+let startColor, midColor, endColor, bgColor;
+
+let isDragging = false;
+let dragStartX = 0, dragStartY = 0;
+let reactRadiusStart = reactRadius;
+
+const particleSlider = document.getElementById("particleSlider");
+const sensSlider = document.getElementById("sensSlider");
+const driftSlider = document.getElementById("driftSlider");
+const jitterSlider = document.getElementById("jitterSlider");
+const opacitySlider = document.getElementById("opacitySlider");
+const trailsSlider = document.getElementById("trailsSlider");
+const useMidCheckbox = document.getElementById("useMidColor");
+const textLayerCheckbox = document.getElementById("textLayerCheckbox"); // <-- NEW checkbox
+const startColorInput = document.getElementById("startColor");
+const midColorInput = document.getElementById("midColor");
+const endColorInput = document.getElementById("endColor");
+const bgColorInput = document.getElementById("bgColor");
+
+// Preset elements
+const presetNameInput = document.getElementById('presetName');
+const presetListSelect = document.getElementById('presetList');
+const savePresetBtn = document.getElementById('savePresetBtn');
+const loadPresetBtn = document.getElementById('loadPresetBtn');
+const deletePresetBtn = document.getElementById('deletePresetBtn');
+
+function setup(){
+  createCanvas(windowWidth, windowHeight);
+  textFont("Helvetica");
+  noStroke();
+  fill(255);
+
+  startColor = color(startColorInput.value);
+  midColor = color(midColorInput.value);
+  endColor = color(endColorInput.value);
+  bgColor = color(bgColorInput.value);
+
+  // NEW: Wire checkbox
+  showText = textLayerCheckbox.checked;
+  textLayerCheckbox.addEventListener('change', () => showText = textLayerCheckbox.checked);
+
+  updateUI();
+  updateSliderColors();
+  updateButtonColors();
+  positionPresetMenu();
+  loadPresetDropdown();
+}
+
+function draw(){
+  background(red(bgColor), green(bgColor), blue(bgColor), (1 - trails) * 255);
+  if(!started){
+    push();
+    fill(startColor);
+    textAlign(CENTER, CENTER);
+    textStyle(BOLD);
+    textSize(30);
+    text("Make your wildest dreams come true.", width/2, height/2 - 25);
+    textSize(60);
+    text("PRESS START NOW!", width/2, height/2 + 40);
+    pop();
+    return;
+  }
+
+  const freq = map(mouseX, 0, width, 0, 1);
+
+  for(let i=0;i<particles.length;i++){
+    const p = particles[i];
+    p.update(freq, morphFactor);
+
+    const t = i / particles.length;
+    if(useMidColor){
+      p.col = t < 0.5 ? lerpColor(startColor, midColor, t*2) : lerpColor(midColor, endColor, (t-0.5)*2);
+    } else {
+      p.col = lerpColor(startColor, endColor, t);
+    }
+    p.display(opacity);
+  }
+
+  // NEW: Conditional text layer
+  if(showText){
+    push();
+    fill(bgColor);
+    textAlign(CENTER, CENTER);
+    textStyle(BOLD);
+    textSize(width * 0.063);
+    text("Clusterfluxy 1.0", width/2, height/2 - 20);
+    textStyle(NORMAL);
+    textSize(width * 0.025);
+    text("For a good time, click & drag", width/2, height/2 + (width * 0.037));
+    pop();
+  }
+}
+
+// ... Rest of your code remains the same (Particle class, initParticles, Poisson centers, presets, sliders, events, mouse controls, etc.)
+
+
+class Particle {
+  constructor(x,y){
+    this.baseSize=random(2,4);
+    this.size=this.baseSize;
+    this.targetSize=this.baseSize;
+    this.reactivity=random(0.8,5.5);
+    this.tx=random(1000); this.ty=random(2000);
+    this.col=color(255);
+    this.theta=random(TWO_PI);
+
+    this.circlePos = {x:x, y:y};
+    const r = dist(x, y, width/2, height/2);
+    const t = map(this.theta, 0, TWO_PI, -PI, PI);
+    const scale = r/17;
+    const hx = 16*pow(sin(t),3)*scale + width/2;
+    const hy = (-13*cos(t) + 5*cos(2*t) + 2*cos(3*t) + cos(4*t))*scale + height/2;
+    this.heartPos = {x: hx, y: hy};
+
+    this.x = this.circlePos.x;
+    this.y = this.circlePos.y;
+  }
+
+  update(freq, morph){
+    const driftRange = map(drift,0,5,0,222);
+    const offsetX = (noise(this.tx)-0.5)*2*driftRange;
+    const offsetY = (noise(this.ty)-0.5)*2*driftRange;
+    this.tx += 0.01 * jitter; this.ty += 0.01 * jitter;
+
+    this.x = lerp(this.circlePos.x + offsetX, this.heartPos.x + offsetX, morph);
+    this.y = lerp(this.circlePos.y + offsetY, this.heartPos.y + offsetY, morph);
+
+    const d = dist(this.x,this.y,mouseX,mouseY);
+    const fade = constrain(map(d,0,reactRadius,1,0),0,1);
+    const normY = (this.circlePos.y/height) - 0.5;
+    const bell = pow(1 - abs(normY*2), 5);
+    const vertFactor = 0.1 + bell*3.2;
+    const baseTarget = this.baseSize*vertFactor;
+    this.targetSize = baseTarget + sensitivity*240*this.reactivity*fade;
+    this.size = lerp(this.size, this.targetSize, 0.1);
+  }
+
+  display(alphaVal){
+    const c = color(red(this.col), green(this.col), blue(this.col), 255*alphaVal);
+    fill(c);
+    ellipse(this.x, this.y, this.size, this.size);
+  }
+}
+
+function initParticles(){
+  particles=[];
+  startColor = color(startColorInput.value);
+  midColor = color(midColorInput.value);
+  endColor = color(endColorInput.value);
+  bgColor = color(bgColorInput.value);
+  useMidColor = useMidCheckbox.checked;
+
+  const centers = generatePoissonCenters(numParticles,25);
+  for(const c of centers) particles.push(new Particle(c.x,c.y));
+  saveSettings();
+}
+
+function generatePoissonCenters(count,minDist){
+  const centers=[]; let attempts=0; const maxAttempts=count*50;
+  while(centers.length < count && attempts < maxAttempts){
+    const x=random(width), y=random(height);
+    let ok=true;
+    for(const c of centers) if(dist(x,y,c.x,c.y)<minDist){ ok=false; break; }
+    if(ok) centers.push({x,y});
+    attempts++;
+  }
+  return centers;
+}
+
+function saveSettings(){
+  const s={
+    numParticles,sensitivity,drift,jitter,opacity,trails,useMidColor,
+    startColor:startColorInput.value,
+    midColor:midColorInput.value,
+    endColor:endColorInput.value,
+    bgColor:bgColorInput.value,
+    reactRadius,morphFactor
+  };
+  localStorage.setItem('particleSettings', JSON.stringify(s));
+}
+
+function updateUI(){
+  document.getElementById("pcntVal").textContent=numParticles;
+  document.getElementById("sensVal").textContent=sensitivity;
+  document.getElementById("driftVal").textContent=drift;
+  document.getElementById("jitterVal").textContent=jitter;
+  document.getElementById("opacityVal").textContent=opacity;
+  document.getElementById("trailsVal").textContent=trails;
+
+  particleSlider.value=numParticles;
+  sensSlider.value=sensitivity;
+  driftSlider.value=drift;
+  jitterSlider.value=jitter;
+  opacitySlider.value=opacity;
+  trailsSlider.value=trails;
+  useMidCheckbox.checked=useMidColor;
+}
+
+function updateSliderColors(){
+  const hex = startColorInput.value || DEFAULTS.startColor;
+  const ids=["particleSlider","sensSlider","driftSlider","jitterSlider","opacitySlider","trailsSlider"];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.style.setProperty('--thumb-fill', hex);
+    el.style.setProperty('--thumb-border', hex);
+    el.style.background = '#fff';
+  });
+  useMidCheckbox.style.accentColor = hex;
+  textLayerCheckbox.style.accentColor = hex;
+}
+
+function updateButtonColors(){
+  const startHex=startColorInput.value || DEFAULTS.startColor;
+  const endHex=endColorInput.value || DEFAULTS.endColor;
+  const bgHex=bgColorInput.value || DEFAULTS.bgColor;
+  const buttons=[document.getElementById('startBtn'),document.getElementById('defaultsBtn'),savePresetBtn,loadPresetBtn,deletePresetBtn];
+  buttons.forEach(btn=>{
+    btn.style.setProperty('--btn-bg', startHex);
+    btn.style.setProperty('--btn-text', '#000');
+    btn.style.setProperty('--btn-border', startHex);
+    btn.style.setProperty('--btn-hover-bg', endHex);
+    btn.style.setProperty('--btn-hover-text', bgHex);
+  });
+}
+
+function positionPresetMenu(){
+  const controlsRect = document.getElementById('controls').getBoundingClientRect();
+  const menu = document.getElementById('presetMenu');
+  menu.style.top = `${controlsRect.bottom + 8}px`;
+}
+
+// Preset storage
+function savePreset(){
+  const name = presetNameInput.value.trim();
+  if(!name) return alert("Enter a preset name");
+  const presetData = {
+    numParticles, sensitivity, drift, jitter, opacity, trails, useMidColor,
+    startColor:startColorInput.value,
+    midColor:midColorInput.value,
+    endColor:endColorInput.value,
+    bgColor:bgColorInput.value,
+    reactRadius,morphFactor
+  };
+  const stored = JSON.parse(localStorage.getItem('savedPresets') || '{}');
+  stored[name] = presetData;
+  localStorage.setItem('savedPresets', JSON.stringify(stored));
+  loadPresetDropdown();
+  alert(`Preset "${name}" saved!`);
+}
+
+function loadPresetDropdown(){
+  const stored = JSON.parse(localStorage.getItem('savedPresets') || '{}');
+  presetListSelect.innerHTML = '';
+  for(const name in stored){
+    const option = document.createElement('option');
+    option.value = name;
+    option.textContent = name;
+    presetListSelect.appendChild(option);
+  }
+}
+
+function loadPreset(){
+  const selected = presetListSelect.value;
+  if(!selected) return alert("Select a preset");
+  const stored = JSON.parse(localStorage.getItem('savedPresets') || '{}');
+  const data = stored[selected];
+  if(!data) return;
+  numParticles = data.numParticles;
+  sensitivity = data.sensitivity;
+  drift = data.drift;
+  jitter = data.jitter;
+  opacity = data.opacity;
+  trails = data.trails;
+  useMidColor = data.useMidColor;
+  reactRadius = data.reactRadius;
+  morphFactor = data.morphFactor;
+
+  startColorInput.value = data.startColor;
+  midColorInput.value = data.midColor;
+  endColorInput.value = data.endColor;
+  bgColorInput.value = data.bgColor;
+
+  presetNameInput.value = selected;
+
+  updateUI();
+  updateSliderColors();
+  updateButtonColors();
+  initParticles();
+}
+
+function deletePreset(){
+  const selected = presetListSelect.value;
+  if(!selected) return alert("Select a preset");
+  const stored = JSON.parse(localStorage.getItem('savedPresets') || '{}');
+  delete stored[selected];
+  localStorage.setItem('savedPresets', JSON.stringify(stored));
+  presetNameInput.value = '';
+  loadPresetDropdown();
+  alert(`Preset "${selected}" deleted!`);
+}
+
+/* Event wiring */
+particleSlider.addEventListener('input', ()=>{ numParticles=int(particleSlider.value); document.getElementById("pcntVal").textContent=numParticles; updateUI(); initParticles(); });
+sensSlider.addEventListener('input', ()=>{ sensitivity=float(sensSlider.value); document.getElementById("sensVal").textContent=sensitivity; saveSettings(); });
+driftSlider.addEventListener('input', ()=>{ drift=float(driftSlider.value); document.getElementById("driftVal").textContent=drift; saveSettings(); });
+jitterSlider.addEventListener('input', ()=>{ jitter=float(jitterSlider.value); document.getElementById("jitterVal").textContent=jitter; saveSettings(); });
+opacitySlider.addEventListener('input', ()=>{ opacity=float(opacitySlider.value); document.getElementById("opacityVal").textContent=opacity; saveSettings(); });
+trailsSlider.addEventListener('input', ()=>{ trails=float(trailsSlider.value); document.getElementById("trailsVal").textContent=trails; saveSettings(); });
+useMidCheckbox.addEventListener('change', ()=>{ useMidColor=useMidCheckbox.checked; saveSettings(); });
+
+document.getElementById('startBtn').addEventListener('click', ()=>{ started=true; initParticles(); });
+document.getElementById('defaultsBtn').addEventListener('click', ()=>{
+  numParticles=DEFAULTS.numParticles; sensitivity=DEFAULTS.sensitivity; drift=DEFAULTS.drift; jitter=DEFAULTS.jitter;
+  opacity=DEFAULTS.opacity; trails=DEFAULTS.trails; useMidColor=DEFAULTS.useMidColor; reactRadius = DEFAULTS.reactRadius; morphFactor = DEFAULTS.morphFactor;
+  startColorInput.value=DEFAULTS.startColor; midColorInput.value=DEFAULTS.midColor; endColorInput.value=DEFAULTS.endColor; bgColorInput.value=DEFAULTS.bgColor;
+  startColor=color(startColorInput.value); midColor=color(midColorInput.value); endColor=color(endColorInput.value); bgColor=color(bgColorInput.value);
+  updateUI(); updateSliderColors(); updateButtonColors(); initParticles();
+});
+
+startColorInput.addEventListener('input', ()=>{ startColor=color(startColorInput.value); updateSliderColors(); updateButtonColors(); saveSettings(); });
+midColorInput.addEventListener('input', ()=>{ midColor=color(midColorInput.value); saveSettings(); });
+endColorInput.addEventListener('input', ()=>{ endColor=color(endColorInput.value); updateButtonColors(); saveSettings(); });
+bgColorInput.addEventListener('input', ()=>{ bgColor=color(bgColorInput.value); updateButtonColors(); saveSettings(); });
+
+savePresetBtn.addEventListener('click', savePreset);
+loadPresetBtn.addEventListener('click', loadPreset);
+deletePresetBtn.addEventListener('click', deletePreset);
+
+/* Mouse drag controls */
+function mousePressed() {
+  if(started && mouseButton === LEFT){
+    isDragging = true;
+    dragStartX = mouseX;
+    dragStartY = mouseY;
+    reactRadiusStart = reactRadius;
+  }
+}
+
+function mouseReleased() { if(mouseButton === LEFT){ isDragging = false; } }
+
+function mouseDragged() {
+  if(isDragging){
+    const deltaX = mouseX - dragStartX;
+    const deltaY = dragStartY - mouseY;
+    reactRadius = constrain(reactRadiusStart + deltaX, 150, 2000);
+    morphFactor = constrain(deltaY / 200, 0, 1);
+  }
+}
+
+function windowResized(){
+  resizeCanvas(windowWidth, windowHeight); 
+  initParticles();
+  positionPresetMenu();
+}
+</script>
+
+</body>
+</html>
