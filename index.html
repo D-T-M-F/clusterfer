@@ -399,13 +399,18 @@ function savePreset(){
 function loadPresetDropdown(){
   const stored = JSON.parse(localStorage.getItem('savedPresets') || '{}');
   presetListSelect.innerHTML = '';
-  for(const name in stored){
+
+  // Get all preset names and sort alphabetically (case-insensitive)
+  const names = Object.keys(stored).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+
+  for (const name of names){
     const option = document.createElement('option');
     option.value = name;
     option.textContent = name;
     presetListSelect.appendChild(option);
   }
 }
+
 
 function loadPreset(){
   const selected = presetListSelect.value;
