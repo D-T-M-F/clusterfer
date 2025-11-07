@@ -64,6 +64,12 @@
     <input type="checkbox" id="useMidColor" checked>
   </div>
 
+  <!-- NEW Checkbox for Text Layer -->
+  <div class="checkbox-row">
+    <span style="font-weight:700; font-size:0.92em; color:#fff;">Text Layer</span>
+    <input type="checkbox" id="textLayerCheckbox" checked>
+  </div>
+
   <div class="label-row"><span>Particles</span><span class="val" id="pcntVal">272</span></div>
   <div class="slider-row"><input type="range" id="particleSlider" min="20" max="500" value="272"></div>
 
@@ -137,6 +143,7 @@ let trails = DEFAULTS.trails;
 let useMidColor = DEFAULTS.useMidColor;
 let reactRadius = DEFAULTS.reactRadius;
 let morphFactor = DEFAULTS.morphFactor;
+let showText = true; // <-- NEW global for text layer
 
 let startColor, midColor, endColor, bgColor;
 
@@ -151,6 +158,7 @@ const jitterSlider = document.getElementById("jitterSlider");
 const opacitySlider = document.getElementById("opacitySlider");
 const trailsSlider = document.getElementById("trailsSlider");
 const useMidCheckbox = document.getElementById("useMidColor");
+const textLayerCheckbox = document.getElementById("textLayerCheckbox"); // <-- NEW checkbox
 const startColorInput = document.getElementById("startColor");
 const midColorInput = document.getElementById("midColor");
 const endColorInput = document.getElementById("endColor");
@@ -173,6 +181,10 @@ function setup(){
   midColor = color(midColorInput.value);
   endColor = color(endColorInput.value);
   bgColor = color(bgColorInput.value);
+
+  // NEW: Wire checkbox
+  showText = textLayerCheckbox.checked;
+  textLayerCheckbox.addEventListener('change', () => showText = textLayerCheckbox.checked);
 
   updateUI();
   updateSliderColors();
@@ -211,17 +223,23 @@ function draw(){
     p.display(opacity);
   }
 
-  push();
-  fill(bgColor);
-  textAlign(CENTER, CENTER);
-  textStyle(BOLD);
-  textSize(width * 0.063);
-  text("Clusterfuckery 1.0", width/2, height/2 - 20);
-  textStyle(NORMAL);
-  textSize(width * 0.025);
-  text("For a good time, click & drag, baby", width/2, height/2 + (width * 0.037));
-  pop();
+  // NEW: Conditional text layer
+  if(showText){
+    push();
+    fill(bgColor);
+    textAlign(CENTER, CENTER);
+    textStyle(BOLD);
+    textSize(width * 0.063);
+    text("Clusterfluxy 1.0", width/2, height/2 - 20);
+    textStyle(NORMAL);
+    textSize(width * 0.025);
+    text("For a good time, click & drag", width/2, height/2 + (width * 0.037));
+    pop();
+  }
 }
+
+// ... Rest of your code remains the same (Particle class, initParticles, Poisson centers, presets, sliders, events, mouse controls, etc.)
+
 
 class Particle {
   constructor(x,y){
@@ -336,6 +354,7 @@ function updateSliderColors(){
     el.style.background = '#fff';
   });
   useMidCheckbox.style.accentColor = hex;
+  textLayerCheckbox.style.accentColor = hex;
 }
 
 function updateButtonColors(){
