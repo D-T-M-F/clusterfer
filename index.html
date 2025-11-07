@@ -387,7 +387,8 @@ function savePreset(){
     midColor:midColorInput.value,
     endColor:endColorInput.value,
     bgColor:bgColorInput.value,
-    reactRadius,morphFactor
+    reactRadius, morphFactor,
+    showText: textLayerCheckbox.checked
   };
   const stored = JSON.parse(localStorage.getItem('savedPresets') || '{}');
   stored[name] = presetData;
@@ -395,6 +396,7 @@ function savePreset(){
   loadPresetDropdown();
   alert(`Preset "${name}" saved!`);
 }
+
 
 function loadPresetDropdown(){
   const stored = JSON.parse(localStorage.getItem('savedPresets') || '{}');
@@ -428,10 +430,18 @@ function loadPreset(){
   reactRadius = data.reactRadius;
   morphFactor = data.morphFactor;
 
-  startColorInput.value = data.startColor;
-  midColorInput.value = data.midColor;
-  endColorInput.value = data.endColor;
-  bgColorInput.value = data.bgColor;
+// Restore color inputs
+startColorInput.value = data.startColor;
+midColorInput.value = data.midColor;
+endColorInput.value = data.endColor;
+bgColorInput.value = data.bgColor;
+
+// Restore Text Layer checkbox state
+if (data.showText !== undefined) {
+  showText = data.showText;
+  textLayerCheckbox.checked = showText;
+}
+
 
   presetNameInput.value = selected;
 
